@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/cdipaolo/goml/text"
+	"github.com/jbowles/text_api/sentim"
 	"github.com/jbowles/text_api/smspam"
 	"github.com/klauspost/cld2"
 )
@@ -17,13 +18,15 @@ var (
 	// this will be the template instance handlers uses
 	tpl *template.Template
 	//this will the sms text spam model loaded in memory so multiple handlers can use it
-	smsSpamModel *text.NaiveBayes
+	smsSpamModel   *text.NaiveBayes
+	sentimentModel *text.NaiveBayes
 )
 
 // setup a templates path globber
 func init() {
 	tpl = template.Must(template.ParseGlob("templates/*"))
 	smsSpamModel = smspam.SMSSpamModel()
+	sentimentModel = sentim.SentimentModel()
 }
 
 // Detector holds fields from cld2 project
@@ -73,8 +76,8 @@ func Detect(w http.ResponseWriter, req *http.Request) {
 	w.Write(resDetect)
 }
 
-// SmsSpamPrediction holds results for text spam classification
-type SmsSpamPrediction struct {
+// BinaryPrediction holds results for text spam classification
+type BinaryPrediction struct {
 	Class            string
 	ClassMessage     string
 	ClassIndex       uint8
@@ -85,17 +88,17 @@ type SmsSpamPrediction struct {
 // SmsSpamClassify is the handler for classifying SMS text messages as spam or not.
 func SmsSpamClassify(w http.ResponseWriter, req *http.Request) {
 	msg := req.FormValue("msg")
-	predict := smsSpamModel.Predict(msg)
+	spamPredict := smsSpamModel.Predict(msg)
 	pclass, probability := smsSpamModel.Probability(msg)
-	label, err := smspam.GetClassLabelFor(predict)
+	label, err := smspam.GetClassLabelFor(spamPredict)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusFailedDependency)
 	}
 
-	result := SmsSpamPrediction{
+	result := BinaryPrediction{
 		Class:            label.Name,
 		ClassMessage:     label.Msg,
-		ClassIndex:       predict,
+		ClassIndex:       spamPredict,
 		ProbabilityClass: pclass,
 		Probability:      probability,
 	}
@@ -106,4 +109,30 @@ func SmsSpamClassify(w http.ResponseWriter, req *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(resSpam)
+}
+
+// SentimentClassify is the handler for classifying text as pos/neg sentiment.
+func SentimentClassify(w http.ResponseWriter, req *http.Request) {
+	msg := req.FormValue("sentence")
+	sentPredict := sentimentModel.Predict(msg)
+	pclass, probability := sentimentModel.Probability(msg)
+	label, err := sentim.GetClassLabelFor(sentPredict)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusFailedDependency)
+	}
+
+	result := BinaryPrediction{
+		Class:            label.Name,
+		ClassMessage:     label.Msg,
+		ClassIndex:       sentPredict,
+		ProbabilityClass: pclass,
+		Probability:      probability,
+	}
+
+	resSent, err := json.Marshal(result)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusFailedDependency)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(resSent)
 }

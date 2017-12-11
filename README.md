@@ -1,6 +1,18 @@
 # text api
 
+## sentence classification
+
+try this [https://archive.ics.uci.edu/ml/datasets/Sentence+Classification](https://archive.ics.uci.edu/ml/datasets/Sentence+Classification)
+
+
+## sentiment
+https://archive.ics.uci.edu/ml/datasets/Sentiment+Labelled+Sentences
+
+
 ## Spam
+
+try this one too [https://archive.ics.uci.edu/ml/datasets/Phishing+Websites](https://archive.ics.uci.edu/ml/datasets/Phishing+Websites)
+
 
 Check out the readme in the `smspam` project.
 

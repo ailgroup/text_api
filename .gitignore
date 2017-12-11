@@ -1,4 +1,5 @@
 smspam/build_data/*
+sentim/build_data/*
 build_data/*
 not_spam
 spam

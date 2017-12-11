@@ -18,6 +18,7 @@ func main() {
 	http.HandleFunc("/detect_browse", handlers.DetectBrowse)
 	http.HandleFunc("/detect", handlers.Detect)
 	http.HandleFunc("/sms_spam_predict", handlers.SmsSpamClassify)
+	http.HandleFunc("/sentiment_predict", handlers.SentimentClassify)
 	http.Handle("/favicon", http.NotFoundHandler())
 	http.ListenAndServe(port, nil)
 }
