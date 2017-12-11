@@ -1,0 +1,35 @@
+title = "Sms Text Spam Configuration"
+description = "toml configuration for building a binary class bayesian spam detector"
+
+[owner]
+name = "Lance Mountain"
+
+## prod must always come first
+[[environments]]
+  name = "production"
+  version = 1.0
+  base_dir = "build_data"
+  package_dir = "smspam"
+  model_dir = "models"
+  training_dir = "training"
+
+  [environments.client]
+  sync_duration = 10 #10ns -- nanoseconds
+  wait_duration = 5000 #5µs -- microseconds
+
+  [[environments.clf_defs]]
+  name = "SmsTextSpam"
+  typ = "only_words_and_numbers" #only_words is the other option
+  #typ = "only_words"
+  model_out = "sms_spam_model.json"
+  version = 0.1
+    [[environments.clf_defs.labels]]
+      val = 0
+      name = "Spam"
+      train_dir = "spam"
+      msg = "Spam detected think about rephrasing"
+    [[environments.clf_defs.labels]]
+      val = 1
+      name = "NotSpam"
+      train_dir = "not_spam"
+      msg = "Looks like a good message"

@@ -1,0 +1,6 @@
+smspam/build_data/*
+build_data/*
+not_spam
+spam
+not_spam/*
+spam/*

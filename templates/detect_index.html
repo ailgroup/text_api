@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>DetectApi</title>
+    </head>
+
+    <body>
+        <h1>Language Detection Score</h1>
+        <h3>Is this Reliable? {{.Reliable}}</h3>
+
+        <h3>Estimate List:</h3>
+        <ul>
+            {{range .Estimates}}
+            <li>Language Code: {{.Language}}</li>
+            <li>Accuracy: {{.Percent}} %</li>
+            <li>Normal Score: {{.NormScore}}</li>
+            {{end}}
+        </ul>
+        <h4>Number of non-detected bytes: {{.TextBytes}}</h4>
+    </body>
+
+</html>
